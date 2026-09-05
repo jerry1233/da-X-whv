@@ -1,0 +1,138 @@
+html, body {
+    width: 375px;
+
+
+}
+
+#great-x-plugin  .purple-filter:after  {
+    background: #806e97;
+    background: -moz-linear-gradient(135deg, rgba(101, 47, 142, 0.88) 0%, rgb(114, 65, 150) 100%);
+    background:-webkit-linear-gradient(135deg, rgba(101, 47, 142, 0.88) 0%, rgb(114, 65, 150) 100%)
+}
+
+#great-x-plugin  .page-header {
+    height: 150px;
+}
+#great-x-plugin .main.main-raised{
+    margin-top: -70px;
+}
+#great-x-plugin  .header-container{
+    top: -35px;
+}
+.brand{
+    text-align: center;
+}
+
+ .brand h3{
+    margin-bottom: 0px;
+     color:white;
+}
+.brand p{
+
+    color:white;
+}
+#great-x-plugin .setting-main select{
+    font-size: 12px;
+}
+#great-x-plugin .setting-main .col-form-label{
+    font-size: 14px;
+    padding:0px;
+}
+#great-x-plugin .setting-main .change-info{
+
+}
+#great-x-plugin .setting-main .select-info{
+    width:120px;
+}
+#great-x-plugin .setting-main .section-basic{
+    padding-top: -70px;
+}
+
+.section.section-navbars.cd-section{
+    padding-bottom: 30px;
+    padding-top: 10px;
+}
+
+#great-x-plugin .setting-main .bmd-label-floating{
+    font-size: 12px;
+}
+#great-x-plugin .setting-main .auto-type{
+    padding-left:20px ;
+    padding-right: 20px;
+}
+#great-x-plugin .setting-main .bmd-label-floating {
+    left: 40%;
+}
+#great-x-plugin .setting-main input.input-jump-url  {
+    text-align: center;
+}
+
+
+. light-gray .card .card-header-primary {
+    box-shadow: none;
+    margin-bottom: 1px;
+    margin-top: 1px;
+}
+
+.light-gray .card.select-country {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+#great-x-plugin .footer{
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+
+.card-center{
+    justify-content: center;
+}
+
+.footer-container{
+    position: relative;
+}
+.saved-badge{
+    opacity: 0;
+    z-index: 10;
+    position: fixed;
+    right: 0px;
+    bottom: 0px ;
+}
+#great-x-plugin .form-tag {
+     margin-bottom: 0px;
+     font-size: 0.6875rem;
+ }
+
+#great-x-plugin .btn.btn-primary {
+
+    background-color: #7f55b1;
+
+}
+
+#great-x-plugin .section.section-navbars.cd-section {
+    padding-bottom: 10px;
+
+}
+
+
+footer.footer{
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+
+#great-x-plugin #quick-link-button-module .quick-link ,#great-x-plugin #quick-link-button-module .quick-link-default{
+    width: 230px;
+}
+
+#great-x-plugin #quota-notice-info{
+    text-align: center;
+}
+
+#great-x-plugin  .jump-to-link-value-module-height{
+    height: 70px;
+}
+
+.blockDisplayNone{
+    display: none;
+}

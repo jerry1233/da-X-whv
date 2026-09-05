@@ -1,0 +1,50 @@
+{
+  "name": "great-x-whv-extension",
+  "displayName": "打工度假自动填表插件-大X-纽澳多用版",
+  "version": "3.6.0",
+  "description": "澳大利亚新西兰打工度假签证大X插件(纽澳多用版)，自动点击，自动填表。",
+  "author": "澳打君",
+  "private": true,
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build && node scripts/postbuild.mjs",
+    "package": "npm run typecheck && npm run build && plasmo package",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "plasmo": "^0.90.5"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.287",
+    "typescript": "^5.7.2"
+  },
+  "manifest": {
+    "name": "打工度假自动填表插件-大X-纽澳多用版",
+    "version": "3.6.0",
+    "description": "澳大利亚新西兰打工度假签证大X插件(纽澳多用版)，自动点击，自动填表。在仅填表模式下，可使用快捷键 Ctrl+Shift+S （ Mac Command+Shift+S ）实现该页填表+提交",
+    "permissions": [
+      "storage",
+      "activeTab",
+      "tabs",
+      "clipboardWrite",
+      "scripting",
+      "alarms"
+    ],
+    "host_permissions": [
+      "http://*/*",
+      "https://*/*"
+    ],
+    "commands": {
+      "click-page-cation": {
+        "suggested_key": {
+          "default": "Ctrl+Shift+S",
+          "mac": "Command+Shift+S"
+        },
+        "description": "click-page-cation"
+      }
+    },
+    "content_security_policy": {
+      "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' data:"
+    }
+  }
+}

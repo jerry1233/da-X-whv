@@ -1,0 +1,17 @@
+node_modules/
+.plasmo/
+build/
+output/
+coverage/
+*.tsbuildinfo
+*.log
+.DS_Store
+**/.DS_Store
+__MACOSX/
+.env
+.env.*
+!.env.example
+.codex/
+.agents/
+.playwright/
+.playwright-cli/
