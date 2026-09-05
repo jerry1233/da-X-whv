@@ -1,38 +1,52 @@
 {
   "name": "great-x-whv-extension",
   "displayName": "打工度假自动填表插件-大X-纽澳多用版",
-  "version": "3.6.0",
+  "version": "3.6.1",
   "description": "澳大利亚新西兰打工度假签证大X插件(纽澳多用版)，自动点击，自动填表。",
   "author": "澳打君",
   "private": true,
   "scripts": {
-    "dev": "plasmo dev",
-    "build": "plasmo build && node scripts/postbuild.mjs",
-    "package": "npm run typecheck && npm run build && plasmo package",
+    "dev": "node scripts/dev.mjs",
+    "build": "node scripts/build.mjs",
+    "package": "npm run typecheck && npm test && npm run build && plasmo package",
+    "test": "node scripts/test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "plasmo": "^0.90.5"
+    "dompurify": "3.4.14"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.287",
+    "chokidar": "4.0.3",
+    "esbuild": "0.28.2",
+    "plasmo": "0.90.5",
     "typescript": "^5.7.2"
+  },
+  "overrides": {
+    "msgpackr": "1.12.1",
+    "fflate": "0.8.3",
+    "browserslist": "4.28.9"
   },
   "manifest": {
     "name": "打工度假自动填表插件-大X-纽澳多用版",
-    "version": "3.6.0",
+    "minimum_chrome_version": "120",
     "description": "澳大利亚新西兰打工度假签证大X插件(纽澳多用版)，自动点击，自动填表。在仅填表模式下，可使用快捷键 Ctrl+Shift+S （ Mac Command+Shift+S ）实现该页填表+提交",
     "permissions": [
       "storage",
-      "activeTab",
       "tabs",
+      "clipboardRead",
       "clipboardWrite",
-      "scripting",
+      "webNavigation",
       "alarms"
     ],
     "host_permissions": [
-      "http://*/*",
-      "https://*/*"
+      "https://onlineservices.immigration.govt.nz/*",
+      "https://www.vfsglobal.cn/australia/china/*",
+      "https://online.vfsglobal.com/*",
+      "https://www.vfsvisaonline.com/*",
+      "https://visa.vfsglobal.com/chn/en/aus/*",
+      "https://visa.vfsglobal.com/chn/zh/aus/*",
+      "https://moni.iwhver.com/*"
     ],
     "commands": {
       "click-page-cation": {

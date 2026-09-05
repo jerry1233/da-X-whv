@@ -1,169 +1,124 @@
 # 大 X 打工度假自动填表扩展
 
-澳大利亚、新西兰打工度假相关页面的自动填表辅助工具，提供自动填表、填表后提交、个人资料管理、快捷链接和教学提示等功能。
+澳大利亚、新西兰打工度假相关页面的自动填表辅助工具。保留原有弹窗、八组个人资料、快捷链接、教学提示以及填表和快捷键功能。
 
-当前版本：`3.6.0`。本仓库保存源码，可直接安装的 Chrome 扩展 ZIP 单独放在 [GitHub Releases](https://github.com/jerry1233/da-X-whv/releases)。
+当前版本：`3.6.1`。源码位于本仓库，安装包单独发布在 [GitHub Releases](https://github.com/jerry1233/da-X-whv/releases)。
 
-> 当前发布为迁移预览版。已知存在站点识别、配置实时同步和存储并发等问题，详见下方“已知限制”。建议使用独立浏览器配置和虚构资料进行测试，完成修复和回归验证后再用于真实申请。
+> 这是安全与功能修复预览版，不代表已适配当前签证网站的全部流程。请先用独立浏览器配置和虚构资料测试，真实提交前逐项核对。验证码和付款仍需手动完成。
 
-## 架构说明
+## 安装 Release
 
-- Chrome Extension Manifest V3，后台采用 Service Worker。
-- 后台入口使用 TypeScript，构建工具为 Plasmo。
-- 弹窗、资料页和快捷链接页保留现有 HTML/CSS；页面脚本和内容脚本仍含旧版 JavaScript，并非全量 TypeScript 迁移。
-- 通过 `chrome.storage.local` 保存设置和个人资料。
-- 不需要部署服务器、数据库或网页托管服务；部署方式是在 Chrome 中加载构建后的扩展目录。
+1. 在 [Releases](https://github.com/jerry1233/da-X-whv/releases) 下载 `da-X-whv-v3.6.1-chrome-mv3.zip`，解压到固定目录。
+2. 使用 Chrome 120 或更新版本，打开 `chrome://extensions/`，开启“开发者模式”。
+3. 点击“加载已解压的扩展程序”，选择解压后直接包含 `manifest.json` 的目录。
+4. 固定扩展到工具栏，打开弹窗，选择国家、资料组和运行模式。
 
-## 直接安装 Release
+GitHub 自动生成的 `Source code` 附件是源码，不能直接加载。安装后不要移动或删除扩展目录。无需服务器、数据库服务、API Key 或网页托管。
 
-1. 打开 [Releases 页面](https://github.com/jerry1233/da-X-whv/releases)，下载附件 `da-X-whv-v3.6.0-chrome-mv3.zip`。
-2. 解压 ZIP，保留解压后的目录。GitHub 自动生成的 `Source code (zip)` 和 `Source code (tar.gz)` 是源码，不能直接当作已构建扩展安装。
-3. 在 Chrome 地址栏打开 `chrome://extensions/`。
-4. 开启右上角“开发者模式”。
-5. 点击“加载已解压的扩展程序”，选择解压后直接包含 `manifest.json` 的目录。
-6. 在浏览器扩展菜单中找到本扩展，按需要固定到工具栏。
+### 从旧版更新
 
-无需把 ZIP 拖入浏览器，也无需打开 ZIP 中的 `popup.html`。不要在安装后移动或删除扩展目录，否则 Chrome 无法继续加载文件。
+先在旧版资料页导出并安全保存资料，**不要先卸载扩展**。将新版解压到原安装目录，再在扩展管理页重新加载；新增的剪贴板读取和导航事件权限可能需要确认。随后刷新目标网页，移除旧版已注入的脚本。
 
-## 从源码构建并安装
+新版本首次启动会把旧 `chrome.storage.local` 中的资料事务性迁移到扩展自身的 IndexedDB，成功后才删除旧资料副本。原有国家、八组资料和设置会保留，缺失字段增量补齐。小于 30 秒的旧后台刷新间隔会调整为 30 秒。
 
-### 环境
+迁移后不要直接降级到 3.6.0：旧版本不认识新的资料存储。移动安装目录可能改变未打包扩展的 ID；卸载会删除本地数据。
 
-- Git。
-- Node.js 24 和随附的 npm。本次本地构建验证使用 Node.js `24.13.1`。
-- 建议使用 Chrome 120 或更新版本；后台使用的 30 秒周期闹钟依赖该版本起的能力。
+## 从源码构建
 
-### 获取源码
+验证环境：Node.js `24.13.1`、npm、Chromium 134。建议使用 Node.js 24。
 
 ```sh
 git clone https://github.com/jerry1233/da-X-whv.git
 cd da-X-whv
 npm ci
-```
-
-`npm ci` 按仓库中的 `package-lock.json` 安装依赖，无需配置 API Key 或 `.env` 文件。
-
-### 检查与构建
-
-```sh
 npm run typecheck
+npm test
 npm run build
 ```
 
-构建会先运行 Plasmo，再通过 `scripts/postbuild.mjs` 复制原有 UI、内容脚本和资源，补齐最终 Manifest。
+在 Chrome 中加载 `build/chrome-mv3-prod/`。不要加载源码根目录，也不要直接打开 `popup.html`。
 
-构建目录为：
+生产构建会清理当前生产输出目录，运行 Plasmo 编译 Service Worker，再由 esbuild 编译 TypeScript 页面和内容控制器，复制原有 UI 资源并检查 Manifest、页面引用及版本号。不会把旧版本遗留脚本混入新包。
 
-```text
-build/chrome-mv3-prod/
-```
-
-在 `chrome://extensions/` 中加载此目录。**不要加载仓库根目录**：根目录的 `manifest.json` 引用了仅存在于构建产物中的后台脚本。
-
-## 开发与调试
-
-完整扩展目前建议采用“修改源码、重新构建、重新加载”的方式：
+### 开发模式
 
 ```sh
-npm run typecheck
-npm run build
+npm run dev
 ```
 
-构建完成后，在 `chrome://extensions/` 点击本扩展的重新加载按钮，并刷新已经打开的目标网页，让内容脚本重新注入。
+加载 `build/chrome-mv3-dev/`。开发监听同时准备原有 HTML、样式、页面脚本与内容脚本；不再只生成后台。修改构建脚本或 npm 配置后重启开发命令。页面资源更新后，在扩展管理页重新加载，并刷新目标网页。
 
-- 调试后台：在扩展详情中点击 Service Worker 的“检查”入口。
-- 调试弹窗：打开弹窗后右键选择“检查”。
-- 调试内容脚本：打开目标网页的开发者工具，检查控制台和扩展脚本执行环境。
-- 修改模式或个人资料后，请刷新目标网页。当前已注入的内容脚本不会可靠地实时同步设置。
+开发版 CSP 仅额外允许本机 localhost/127.0.0.1 的开发连接；生产版不包含该许可。不要将开发服务暴露给公网，不要把开发版作为 Release 发布。
 
-`npm run dev` 仅启动 Plasmo 自身的开发监听，尚未自动整合静态页面复制和 Manifest 补齐，不能把它的原始输出视为功能完整的扩展。完整功能验证请使用上面的生产构建流程。
-
-## 生成发布包
+### 发布打包
 
 ```sh
 npm run package
 ```
 
-命令按以下顺序执行：类型检查、生产构建、复制静态资源并补齐 Manifest、压缩。输出为：
+依次执行类型检查、单元测试、生产构建、资源检查与压缩，输出 `build/chrome-mv3-prod.zip`。ZIP 根目录包含 `manifest.json`，可将附件命名为 `da-X-whv-v3.6.1-chrome-mv3.zip`。
+
+源码提交到仓库；ZIP 和 `SHA256SUMS.txt` 上传到 GitHub Release。`node_modules/`、`.plasmo/`、`build/`、浏览器配置和导出的个人资料不得提交。
+
+## 使用与行为
+
+- “仅自动填表”不自动提交；`Ctrl+Shift+S`（macOS：`Command+Shift+S`）可触发当前页面填表和点击。
+- “关闭”立即取消当前等待任务，并禁止填表、点击和快捷键自动跳转。已经完成的网页操作无法撤销。
+- 修改模式、国家或资料组会取消旧任务。下一次快捷键读取最新设置；要重新执行页面自动流程，请刷新网页。
+- 资料窗口固定编辑打开时选择的资料组，不会因另一个弹窗切组而误写其他组。保存完成后才显示“已保存”。
+- JSON 导入验证对象类型、字段、长度和日期；错误会提示，不会覆盖原资料。剪贴板仅读取用户点击导入时的内容。
+- 模拟站点 `moni.iwhver.com` 只接收虚构示例资料，不会读取真实账号和护照。生成测试资料使用 `example.invalid` 邮箱，不能用于真实注册。
+- 测试模式的后台网络错误重试保留旧版“关闭模式 + 测试模式 + 自动跳转”的启用条件；只处理允许站点真实导航失败的标签页，不根据 favicon 猜测，更不会改写其他网页。
+- 后台重试与名额不足页刷新间隔为 30000–86400000 毫秒。浏览器休眠可能延迟任务；MV3 不承诺毫秒级后台定时。普通“关闭”且未显式开启测试重试时，不执行自动操作。
+- 下拉框等待最长 15 秒，超时提示重试，不再无限轮询。
+
+## 架构
 
 ```text
-build/chrome-mv3-prod.zip
+src/background.ts             Plasmo / Manifest V3 Service Worker
+src/shared/model.ts           类型、输入验证、精确站点规则和默认资料
+src/shared/store.ts           串行更新，避免并发覆盖
+src/shared/private-storage.ts 扩展私有 IndexedDB 与旧版迁移
+src/shared/client.ts          带成功/错误响应的消息客户端
+src/content/index.ts          TypeScript 页面控制器与任务取消
+src/content/legacy-engine.js  已去除字符串混淆的旧站点选择器兼容层
+src/content/notifications.ts  DOMPurify 净化后的原样式通知
+src/ui/                       TypeScript 弹窗、资料页、快捷链接逻辑
+*.html                        原有五个界面
+assets/ css/ images/ js/       原有样式、图片与兼容 UI 库
+scripts/                      开发、构建、验证和测试入口
+tests/core.test.ts            域名、校验、迁移、并发保存等单元测试
+tests/browser-*.js            Playwright CLI 浏览器回归脚本
+package.json                  版本、依赖、命令及权限唯一配置来源
 ```
 
-该 ZIP 内的 `manifest.json` 位于压缩包根目录。上传 Release 时可将附件命名为 `da-X-whv-v3.6.0-chrome-mv3.zip`。附件名中的版本应与构建后 Manifest 的版本一致。
+后台、消息边界和 UI 逻辑使用严格 TypeScript。旧站点 DOM 适配器暂保留可读 JavaScript，以控制选择器迁移风险，并通过受限能力接口接入控制器；它不是全量 TypeScript 改写。
 
-发布前应解压 ZIP，在独立浏览器配置中实际安装，检查弹窗、资料保存、快捷链接、页面填表和快捷键。仅通过 TypeScript 检查或构建并不能证明网页流程正确。
+## 安全与权限
 
-源码提交到 GitHub 仓库；构建 ZIP 上传至 GitHub Release 的附件区域。`node_modules/`、`.plasmo/` 和 `build/` 不纳入源码版本控制。
+- 移除全部 HTTP/HTTPS 页面注入，只允许 `package.json` 明确列出的 HTTPS INZ/VFS 站点及模拟站点，并在后台与内容控制器再次校验主机及国家。
+- 网页内容脚本不能直接读取完整资料库，只能请求当前站点、当前国家和当前资料组。网页消息不能修改设置或任意个人资料。
+- 个人资料保存在扩展源的 IndexedDB。普通网页和内容脚本不能直接访问该数据库；这不是磁盘加密，拥有本机配置文件或扩展调试权限的人仍可能读取资料。
+- 不主动上传资料到自建服务。但填入目标网站表单的资料会被该网站读取或提交；请确认页面和网站本身可信。
+- `storage` 用于设置及重试状态；`tabs` 用于快捷链接和目标标签页校验；`webNavigation` 仅记录允许站点的主框架错误；`alarms` 用于 MV3 重试；剪贴板权限用于用户主动导入/导出和复制链接。
+- 移除资料日志、旧混淆后台、重复 jQuery 和未使用的初始化调用。密码输入框改为遮罩显示，通知 HTML 使用锁定版本的 DOMPurify 净化。
 
-## 基本使用
+## 验证与限制
 
-1. 打开扩展弹窗，选择澳大利亚或新西兰。
-2. 选择需要使用的个人资料组，通过“修改资料”编辑信息。
-3. 选择“仅自动填表”或“自动填表+提交”等模式。
-4. 刷新目标网页后再测试填表行为。
-5. 在仅填表模式下，快捷键 `Ctrl+Shift+S`，macOS 为 `Command+Shift+S`，会触发该页填表及点击操作。可在 `chrome://extensions/shortcuts` 检查快捷键是否冲突。
+本次已验证类型检查、单元测试、独立 Chromium 中的域名欺骗防护、关闭模式、快捷键、切组、消息权限、并发保存、资料编辑、恶意导入及五个 UI 页面。没有使用真实账号，没有提交真实申请或付款。
 
-现有页面适配规则来自旧版逻辑，真实网站的 DOM、链接和流程可能已经变化。验证码及付款等环节需要用户自行处理，未验证当前真实签证网站的完整申请流程。
+`tests/browser-check.js` 和 `tests/browser-lifecycle.js` 可通过 Playwright CLI 的 `run-code` 执行。必须使用只加载本扩展的独立测试浏览器配置；生命周期测试会重置其中的测试数据库，不要在个人浏览器配置执行。它们使用虚构资料和本地拦截的网页，不访问真实申请流程。截图输出到 `output/playwright/`。
 
-## 目录结构
+仍需注意：
 
-```text
-background.ts          TypeScript 后台 Service Worker
-content_script.js      旧版页面识别及自动填表逻辑
-popup.html             扩展弹窗
-info_au.html            澳大利亚资料编辑页
-info_nz.html            新西兰资料编辑页
-link_au.html            澳大利亚快捷链接页
-link_nz.html            新西兰快捷链接页
-js/                    页面脚本及旧版后台参考代码
-assets/                UI 库、图标和样式资源
-css/                   扩展自定义样式
-images/                图片资源
-scripts/postbuild.mjs   静态资源复制与 Manifest 补齐
-package.json           npm 命令、依赖与 Plasmo Manifest 配置
-package-lock.json      依赖锁文件
-tsconfig.json          TypeScript 配置
-build/                 本地构建产物，不提交到源码仓库
-```
+- 旧版 AU/NZ 选择器和流程可能不适用于当前真实网站；部分新预约页面原本就未适配，仍提示手动操作。
+- 健康、品行、资金等申请答案来自原有规则，不能替代对本人真实情况的核对；建议先使用仅填表模式。
+- 部分字体仍来自原有外部资源，离线时可能出现字体差异。
+- `npm audit` 仍报告 Plasmo 固定构建链的依赖告警，包括 CSP 解析、开发服务器及图像处理相关包。已应用兼容修复并锁定 `msgpackr`、`fflate`、`browserslist`，未强制降级 Plasmo 或跨主版本替换其内部依赖。只构建可信源码和本地素材，不对外开放开发服务。不能把本次修复解释为全依赖零漏洞认证。
+- 未申请 Chrome Web Store 审核；项目级授权仍需确认。
 
-## 已知限制
-
-以下问题在当前迁移版本中尚未修复，本次发布主要整理源码、部署说明并修正发布打包顺序：
-
-- 站点识别存在完整 URL 字符串匹配，非官方站点可能被误判并填入资料。正式使用前需要精确的域名白名单和更窄的注入范围。
-- 已打开页面缓存旧设置，切换关闭模式或资料组后可能继续按旧配置操作；页面刷新前不要依赖开关立即停止操作。
-- 多处配置保存采用整对象读改写，并发操作可能覆盖其他修改。
-- 存储初始化发现一个分区缺失时可能重置其他已有资料，需要改为增量补齐和版本化迁移。
-- 测试刷新模式、目标标签页筛选，以及 Service Worker 冷启动后的定时器恢复仍需修正。
-- UI 存在重复 jQuery 加载、Bootstrap 加载顺序及缺失滑块元素引起的初始化错误。
-- 核心旧 JavaScript 未纳入完整类型检查，Manifest 配置仍有多处来源。
-- 部分字体来自外部资源，离线或网络受限时显示效果可能不同。
-
-## 数据与权限
-
-个人资料保存在当前 Chrome 配置的 `chrome.storage.local` 中，不会因源码上传自动进入 GitHub。不要将真实资料、账号密码、浏览器配置目录或导出的资料文件提交到仓库。
-
-当前 Manifest 请求所有 HTTP/HTTPS 页面访问权限，以及 storage、tabs、activeTab、clipboardWrite、scripting、alarms 等权限。结合上述已知站点识别问题，预览测试建议限定在独立浏览器配置内进行。
-
-## 常见问题
-
-**提示无法加载后台脚本或 Service Worker？**
-
-确认加载的是 Release 解压目录或 `build/chrome-mv3-prod/`，并且目录内存在 `static/background/index.js`。从源码安装时先执行 `npm run build`。
-
-**修改源码后 Chrome 没有变化？**
-
-重新构建、在扩展管理页重新加载扩展，再刷新目标网页。这三个步骤分别更新构建文件、扩展实例和网页内的内容脚本。
-
-**如何更新已安装版本？**
-
-先备份个人资料，将新版本解压到原安装目录，再到扩展管理页重新加载。不要先卸载扩展，因为卸载会删除该扩展的本地数据。移动到其他目录可能改变未打包扩展的 ID 和存储位置。
-
-**能否直接发布到 Chrome Web Store？**
-
-当前版本尚未完成上架准备和全流程回归。现有字符串混淆还需要根据 [Chrome Web Store 代码可读性要求](https://developer.chrome.com/docs/webstore/program-policies/code-readability) 处理，不能将本 Release 理解为已通过商店审核。
+详见 [CHANGELOG.md](CHANGELOG.md)。发现新站点失效时，请提供网址、脱敏后的 DOM 或错误信息，勿提交真实密码、护照或申请资料。
 
 ## 来源与许可
 
-原项目元数据署名为“澳打君”，本仓库整理其迁移版本。保留代码和第三方资源中的原有署名、版权与许可声明；当前源码没有单独的项目级 LICENSE 文件，本次整理不额外授予或替换原作者许可。
+原项目元数据署名为“澳打君”。保留原作者及第三方资源的署名、版权和许可声明。本仓库没有单独的项目级 LICENSE；本次整理不额外授予或替换原作者许可。
